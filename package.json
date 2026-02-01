@@ -1,0 +1,12 @@
+{
+  "name": "claw-snip",
+  "version": "1.0.0",
+  "description": "Simple snippet manager for agents",
+  "main": "index.js",
+  "bin": {
+    "snip": "./index.js"
+  },
+  "keywords": ["snippets", "notes", "quotes", "agent"],
+  "author": "Julian Thorne",
+  "license": "MIT"
+}

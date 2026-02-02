@@ -3,18 +3,38 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKSPACE = path.resolve(__dirname, '../../');
-const SNIPS_FILE = path.join(WORKSPACE, 'snippets.json');
+const DEFAULT_SNIPS_FILE = path.join(WORKSPACE, 'snippets.json');
 
 const args = process.argv.slice(2);
-const command = args[0];
+
+// Extract --file/-f flag from args (can appear anywhere)
+let snipsFile = DEFAULT_SNIPS_FILE;
+const filteredArgs = [];
+for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--file' || args[i] === '-f') {
+        snipsFile = args[++i];
+        if (snipsFile && !path.isAbsolute(snipsFile)) {
+            snipsFile = path.resolve(process.cwd(), snipsFile);
+        }
+    } else {
+        filteredArgs.push(args[i]);
+    }
+}
+
+const command = filteredArgs[0];
 
 function loadSnips() {
-    if (!fs.existsSync(SNIPS_FILE)) return [];
-    return JSON.parse(fs.readFileSync(SNIPS_FILE, 'utf-8'));
+    if (!fs.existsSync(snipsFile)) return [];
+    return JSON.parse(fs.readFileSync(snipsFile, 'utf-8'));
 }
 
 function saveSnips(snips) {
-    fs.writeFileSync(SNIPS_FILE, JSON.stringify(snips, null, 2));
+    // Create directory if it doesn't exist
+    const dir = path.dirname(snipsFile);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(snipsFile, JSON.stringify(snips, null, 2));
 }
 
 function generateId() {
@@ -23,7 +43,7 @@ function generateId() {
 
 if (command === 'add') {
     // snip add "text" [--tag tag1,tag2] [--source url]
-    const text = args[1];
+    const text = filteredArgs[1];
     if (!text) {
         console.error('Usage: snip add "text" [--tag tags] [--source url]');
         process.exit(1);
@@ -32,11 +52,11 @@ if (command === 'add') {
     let tags = [];
     let source = '';
     
-    for (let i = 2; i < args.length; i++) {
-        if (args[i] === '--tag' || args[i] === '-t') {
-            tags = args[++i]?.split(',').map(t => t.trim().toLowerCase()) || [];
-        } else if (args[i] === '--source' || args[i] === '-s') {
-            source = args[++i] || '';
+    for (let i = 2; i < filteredArgs.length; i++) {
+        if (filteredArgs[i] === '--tag' || filteredArgs[i] === '-t') {
+            tags = filteredArgs[++i]?.split(',').map(t => t.trim().toLowerCase()) || [];
+        } else if (filteredArgs[i] === '--source' || filteredArgs[i] === '-s') {
+            source = filteredArgs[++i] || '';
         }
     }
 
@@ -56,7 +76,7 @@ if (command === 'add') {
 
 } else if (command === 'list' || command === 'ls') {
     const snips = loadSnips();
-    const tagFilter = args[1];
+    const tagFilter = filteredArgs[1];
     
     let filtered = snips;
     if (tagFilter) {
@@ -76,7 +96,7 @@ if (command === 'add') {
     }
 
 } else if (command === 'search' || command === 's') {
-    const query = args.slice(1).join(' ').toLowerCase();
+    const query = filteredArgs.slice(1).join(' ').toLowerCase();
     if (!query) {
         console.error('Usage: snip search <query>');
         process.exit(1);
@@ -100,7 +120,7 @@ if (command === 'add') {
     }
 
 } else if (command === 'get') {
-    const id = args[1];
+    const id = filteredArgs[1];
     if (!id) {
         console.error('Usage: snip get <id>');
         process.exit(1);
@@ -121,7 +141,7 @@ if (command === 'add') {
     console.log(`Created: ${snip.created}`);
 
 } else if (command === 'rm' || command === 'delete') {
-    const id = args[1];
+    const id = filteredArgs[1];
     if (!id) {
         console.error('Usage: snip rm <id>');
         process.exit(1);
@@ -174,5 +194,13 @@ Commands:
   rm <id>                                    Delete snippet
   tags                                       List all tags
   export                                     Export as JSON
+
+Options:
+  --file, -f <path>   Use custom snippets file (default: workspace/snippets.json)
+
+Examples:
+  snip add "code snippet" --tag js,util
+  snip list --file ~/work-snippets.json
+  snip search function -f ./project.json
 `);
 }

@@ -4,7 +4,8 @@
   "description": "Simple snippet manager for agents",
   "main": "index.js",
   "bin": {
-    "snip": "./index.js"
+    "snip": "./index.js",
+    "claw-snip": "./index.js"
   },
   "keywords": ["snippets", "notes", "quotes", "agent"],
   "author": "Julian Thorne",

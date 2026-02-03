@@ -1,26 +1,76 @@
 # claw-snip
 
-Simple snippet manager for agents
+Simple snippet manager for agents.
 
 ## Usage
 
 ```bash
-snip [options]
+claw-snip <command> [options]
+# OR
+snip <command> [options]
+```
+
+## Commands
+
+### `add`
+Save a new snippet.
+```bash
+claw-snip add "console.log('debug')" --tag js,debug
+claw-snip add "TODO: fix this" --tag todo --source "file.js:10"
+```
+
+### `list`
+List snippets, optionally filtered by tag.
+```bash
+claw-snip list
+claw-snip list js
+```
+
+### `search`
+Search snippet text.
+```bash
+claw-snip search "console"
+```
+
+### `get`
+Show the full content of a snippet by ID.
+```bash
+claw-snip get <id>
+```
+
+### `rm`
+Delete a snippet.
+```bash
+claw-snip rm <id>
+```
+
+### `tags`
+List all used tags.
+```bash
+claw-snip tags
+```
+
+### `export`
+Export all snippets as JSON.
+```bash
+claw-snip export
 ```
 
 ## Options
 
-- `--file`
-- `--tag`
-- `--source`
-- `-f`
-- `-t`
-- `-s`
+- `--file, -f <path>`: Use a custom snippets file (default: `workspace/snippets.json`)
+- `--tag`: Comma-separated tags (for `add`)
+- `--source`: Source reference (for `add`)
 
-## When to Use
+## Examples
 
-Use this tool when you need to simple snippet manager for agents.
+```bash
+# Save a quick thought
+claw-snip add "Remember to check memory usage" --tag idea
 
-## Notes
+# Save a reusable command
+claw-snip add "find . -name '*.js' | xargs wc -l" --tag bash,utils
 
-- Run `snip --help` for full usage information
+# Find it later
+claw-snip list bash
+```

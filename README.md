@@ -1,31 +1,42 @@
 # claw-snip
 
+## Install
+
+```bash
+git clone https://github.com/julianthorne2jz/claw-snip
+cd claw-snip
+npm link
+```
+
+Now you can use `claw-snip` from anywhere.
+
+
 Simple snippet/quote manager. Save text with tags, search later.
 
 ## Usage
 
 ```bash
 # Add a snippet
-node index.js add "The quote text" --tag wisdom,quotes --source "Author"
+claw-snip add "The quote text" --tag wisdom,quotes --source "Author"
 
 # List all (or by tag)
-node index.js list
-node index.js list wisdom
+claw-snip list
+claw-snip list wisdom
 
 # Search
-node index.js search "keyword"
+claw-snip search "keyword"
 
 # Get full snippet
-node index.js get <id>
+claw-snip get <id>
 
 # Delete
-node index.js rm <id>
+claw-snip rm <id>
 
 # List all tags
-node index.js tags
+claw-snip tags
 
 # Export JSON
-node index.js export
+claw-snip export
 ```
 
 ## Storage
